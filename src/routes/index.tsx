@@ -107,9 +107,9 @@ function PhoneStep({ onSubmit, onBack }: { onSubmit: () => void; onBack: () => v
   const [error, setError] = useState("");
 
   const validate = (v: string) => {
-    const cleaned = v.replace(/\s/g, "");
-    if (!cleaned) return "Insira um número de telemóvel.";
-    if (!/^\+\d{8,15}$/.test(cleaned)) return "Número inválido. Use o formato +351 912 345 678.";
+    const digits = v.replace(/\D/g, "");
+    if (!digits) return "Insira um número de telemóvel.";
+    if (digits.length < 6) return "Número demasiado curto.";
     return "";
   };
 
