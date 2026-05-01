@@ -577,7 +577,7 @@ function ReportStep() {
             durante a análise. Além disso, o sistema encontrou{" "}
             <span className="text-brand-red font-semibold">267 fotos apagadas</span> que podem conter conteúdo sensível.
           </p>
-          <button className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
+          <button onClick={() => setCheckout(true)} className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
             🔓 DESBLOQUEAR ÁUDIOS COMPLETOS
           </button>
           <div className="mt-4 grid grid-cols-3 gap-3">
@@ -587,7 +587,7 @@ function ReportStep() {
               </div>
             ))}
           </div>
-          <button className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
+          <button onClick={() => setCheckout(true)} className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
             🔓 DESBLOQUEAR TODAS AS FOTOS
           </button>
         </section>
@@ -596,10 +596,12 @@ function ReportStep() {
       </main>
 
       <div className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-white via-white to-white/0 pt-4 pb-4 px-4">
-        <button className="block max-w-3xl mx-auto w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-4 rounded-xl shadow-lg text-lg">
+        <button onClick={() => setCheckout(true)} className="block max-w-3xl mx-auto w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-4 rounded-xl shadow-lg text-lg">
           🔓 DESBLOQUEAR TUDO POR R$20,99
         </button>
       </div>
+
+      <CheckoutModal open={checkout} onClose={() => setCheckout(false)} />
 
       <Footer />
     </div>
