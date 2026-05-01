@@ -1,26 +1,397 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
 
 export const Route = createFileRoute("/")({
   component: Index,
+  head: () => ({
+    meta: [
+      { title: "Proteja o Seu Relacionamento — Relatório WhatsApp" },
+      {
+        name: "description",
+        content:
+          "Descubra o que escondem de si. Localização, áudios, fotos e vídeos eliminados. Resultados em 2 minutos, totalmente discreto.",
+      },
+    ],
+  }),
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+type Step = "intro" | "phone" | "processing" | "report";
+
+function TopBanner({ red = true }: { red?: boolean }) {
   return (
     <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
+      className={`w-full text-center py-3 text-sm font-bold tracking-wide text-white ${
+        red ? "bg-brand-red-soft" : "bg-brand-red"
+      }`}
     >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+      APENAS HOJE 01/05/2026 TESTE GRÁTIS.
+    </div>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="mt-16 border-t border-border bg-white">
+      <div className="max-w-3xl mx-auto px-6 py-8 text-center text-sm text-muted-foreground space-y-4">
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          <a href="#" className="hover:text-foreground transition">Política de Privacidade</a>
+          <a href="#" className="hover:text-foreground transition">Termos de Utilização</a>
+          <a href="#" className="hover:text-foreground transition">Suporte por Email</a>
+        </div>
+        <p className="leading-relaxed">
+          Esta plataforma tem finalidade exclusivamente informativa e destina-se a auxiliar pais,
+          responsáveis legais e profissionais autorizados a compreender ferramentas de monitorização
+          de dispositivos, sempre dentro dos limites da legislação vigente e com o devido consentimento.
+        </p>
+        <p>© 2026 Proteja o Seu Relacionamento. Todos os direitos reservados.</p>
+      </div>
+    </footer>
+  );
+}
+
+function CookieBanner() {
+  const [show, setShow] = useState(true);
+  if (!show) return null;
+  return (
+    <div className="fixed bottom-0 inset-x-0 z-50 bg-foreground/95 text-white px-4 py-3 flex flex-col sm:flex-row items-center justify-center gap-3 text-sm">
+      <span>Este site utiliza cookies para melhorar a sua experiência. Ao continuar, concorda com a nossa política.</span>
+      <button
+        onClick={() => setShow(false)}
+        className="bg-brand-green hover:bg-brand-green-strong transition text-white font-semibold px-5 py-2 rounded-md"
+      >
+        Aceitar
+      </button>
+    </div>
+  );
+}
+
+function IntroStep({ onChoose }: { onChoose: () => void }) {
+  return (
+    <div className="min-h-[calc(100vh-48px)] flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-6 py-16">
+        <div className="w-full max-w-xl text-center">
+          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight text-foreground">
+            DESCUBRA O QUE ESCONDEM DE SI...
+          </h1>
+          <p className="mt-5 text-muted-foreground leading-relaxed">
+            Localização em tempo real, áudios, fotos e vídeos eliminados!
+            <br />
+            Resultados em 2 minutos, totalmente discreto.
+          </p>
+          <div className="mt-10 space-y-4">
+            <button
+              onClick={onChoose}
+              className="w-full flex items-center gap-4 bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-5 px-6 rounded-xl shadow-sm"
+            >
+              <span className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-lg">👤</span>
+              <span>Quero Monitorizar o Meu Parceiro</span>
+            </button>
+            <button
+              onClick={onChoose}
+              className="w-full flex items-center gap-4 bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-5 px-6 rounded-xl shadow-sm"
+            >
+              <span className="h-10 w-10 rounded-full bg-white/20 flex items-center justify-center text-lg">👤</span>
+              <span>Quero Monitorizar a Minha Parceira</span>
+            </button>
+          </div>
+        </div>
+      </main>
+      <Footer />
+      <CookieBanner />
+    </div>
+  );
+}
+
+function PhoneStep({ onSubmit, onBack }: { onSubmit: () => void; onBack: () => void }) {
+  const [value, setValue] = useState("");
+  const [error, setError] = useState("");
+
+  const validate = (v: string) => {
+    const cleaned = v.replace(/\s/g, "");
+    if (!cleaned) return "Insira um número de telemóvel.";
+    if (!/^\+\d{8,15}$/.test(cleaned)) return "Número inválido. Use o formato +351 912 345 678.";
+    return "";
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const err = validate(value);
+    setError(err);
+    if (!err) onSubmit();
+  };
+
+  return (
+    <div className="min-h-[calc(100vh-48px)] flex flex-col">
+      <main className="flex-1 flex items-center justify-center px-6 py-16">
+        <div className="w-full max-w-xl text-center">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+            Introduza o número da sua parceira
+          </h1>
+          <p className="mt-4 text-sm text-muted-foreground">
+            Insira o número de telemóvel com indicativo do país <span className="text-brand-red font-medium">(ex: +351)</span>
+          </p>
+          <form onSubmit={handleSubmit} className="mt-8 space-y-4" noValidate>
+            <div>
+              <input
+                type="tel"
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  if (error) setError(validate(e.target.value));
+                }}
+                placeholder="+351 912 345 678"
+                aria-invalid={!!error}
+                className={`w-full px-5 py-4 rounded-xl border-2 text-center text-lg outline-none transition ${
+                  error ? "border-destructive" : "border-brand-green focus:border-brand-green-strong"
+                }`}
+              />
+              {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
+            </div>
+            <button
+              type="submit"
+              className="w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-4 rounded-xl"
+            >
+              Iniciar Monitorização
+            </button>
+            <button
+              type="button"
+              onClick={onBack}
+              className="text-sm text-muted-foreground hover:text-foreground transition"
+            >
+              ← Voltar
+            </button>
+          </form>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function ProcessingStep({ onDone }: { onDone: () => void }) {
+  const [progress, setProgress] = useState(0);
+  const steps = [
+    "A localizar servidor mais próximo...",
+    "A estabelecer ligação segura...",
+    "A autenticar credenciais...",
+    "A aceder à base de dados...",
+    "A recolher mensagens...",
+    "A analisar conversas...",
+  ];
+  const [shown, setShown] = useState<number>(0);
+
+  useEffect(() => {
+    const id = setInterval(() => {
+      setProgress((p) => Math.min(100, p + 4));
+    }, 120);
+    return () => clearInterval(id);
+  }, []);
+
+  useEffect(() => {
+    setShown(Math.min(steps.length, Math.floor((progress / 100) * steps.length) + 1));
+  }, [progress]);
+
+  return (
+    <div className="min-h-[calc(100vh-48px)] flex flex-col">
+      <main className="flex-1 flex items-start justify-center px-6 py-12">
+        <div className="w-full max-w-2xl">
+          <div className="text-center">
+            <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+              A Processar Acesso ao WhatsApp
+            </h1>
+            <p className="mt-3 text-muted-foreground">
+              Aguarde enquanto conectamos aos servidores e preparamos o seu acesso.
+            </p>
+          </div>
+
+          <div className="mt-8 bg-white rounded-2xl border border-border p-6 shadow-sm">
+            <div className="h-3 rounded-full bg-secondary overflow-hidden">
+              <div
+                className="h-full bg-brand-green transition-all"
+                style={{ width: `${progress}%` }}
+              />
+            </div>
+            <p className="mt-2 text-sm text-muted-foreground">A conectar aos servidores... {progress}%</p>
+
+            <ul className="mt-5 bg-secondary rounded-xl p-4 space-y-2 max-h-44 overflow-auto text-sm">
+              {steps.slice(0, shown).map((s, i) => (
+                <li key={i} className="flex items-center gap-2 text-foreground">
+                  <span className="text-brand-green">↻</span> {s}
+                </li>
+              ))}
+            </ul>
+
+            <div className="mt-6 bg-secondary rounded-xl p-4 flex items-center gap-4">
+              <div className="h-12 w-12 rounded-full bg-muted flex items-center justify-center text-muted-foreground text-xl">
+                👤
+              </div>
+              <div className="flex-1">
+                <p className="font-bold">Perfil WhatsApp</p>
+                <p className="text-sm text-muted-foreground">johsiuajdbaiusdbad</p>
+              </div>
+              <span className="text-xs font-semibold px-3 py-1 rounded-full bg-brand-green/15 text-brand-green-strong">
+                Online
+              </span>
+            </div>
+
+            <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div className="bg-secondary rounded-xl p-3">
+                <p className="text-xs text-muted-foreground">Última conexão</p>
+                <p className="font-bold">Há poucos minutos</p>
+              </div>
+              <div className="bg-secondary rounded-xl p-3">
+                <p className="text-xs text-muted-foreground">Estado do dispositivo</p>
+                <p className="font-bold">Ativo</p>
+              </div>
+            </div>
+
+            <button
+              onClick={onDone}
+              disabled={progress < 100}
+              className="mt-6 w-full bg-brand-green hover:bg-brand-green-strong disabled:opacity-50 disabled:cursor-not-allowed transition text-white font-bold py-4 rounded-xl"
+            >
+              Aceder ao Relatório
+            </button>
+          </div>
+        </div>
+      </main>
+      <Footer />
+    </div>
+  );
+}
+
+function ConversationCard({ id, label, alert, time }: { id: string; label: string; alert: string; time: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <button
+        onClick={() => setOpen(true)}
+        className="w-full flex items-center gap-4 px-4 py-3 rounded-xl bg-secondary/60 hover:bg-secondary transition text-left"
+      >
+        <div className="h-10 w-10 rounded-full bg-muted flex items-center justify-center font-bold text-muted-foreground text-sm">
+          {id}
+        </div>
+        <div className="flex-1">
+          <p className="font-bold">{label}</p>
+          <p className="text-sm text-brand-red">⚠ {alert}</p>
+        </div>
+        <span className="text-xs text-muted-foreground">{time}</span>
+      </button>
+
+      {open && (
+        <div className="fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-4" onClick={() => setOpen(false)}>
+          <div className="w-full max-w-md bg-white rounded-2xl p-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex justify-between items-center">
+              <p className="font-bold">{label}</p>
+              <button onClick={() => setOpen(false)} className="text-muted-foreground">✕</button>
+            </div>
+            <div className="mt-4 space-y-2 max-h-72 overflow-auto">
+              <div className="bg-secondary rounded-lg p-2 max-w-[75%] text-sm">
+                Olá, tudo bem?<div className="text-[10px] text-muted-foreground text-right">14:22</div>
+              </div>
+              <div className="bg-brand-green/15 rounded-lg p-2 max-w-[75%] text-sm ml-auto">
+                Tudo sim e tu?<div className="text-[10px] text-muted-foreground text-right">14:23</div>
+              </div>
+              <div className="bg-secondary rounded-lg p-2 max-w-[75%] text-sm italic text-muted-foreground">
+                🔒 Conteúdo bloqueado<div className="text-[10px] text-right">14:25</div>
+              </div>
+              <div className="bg-brand-green/15 rounded-lg p-2 max-w-[75%] text-sm ml-auto italic text-muted-foreground">
+                🔒 Conteúdo bloqueado<div className="text-[10px] text-right">14:26</div>
+              </div>
+            </div>
+            <p className="mt-4 text-center text-sm text-muted-foreground">
+              Para visualizar a conversa completa, precisa desbloquear as conversas.
+            </p>
+            <button className="mt-3 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
+              🔓 DESBLOQUEAR CONVERSAS COMPLETAS
+            </button>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function ReportStep() {
+  const ctaRef = useRef<HTMLDivElement>(null);
+  return (
+    <div className="min-h-screen flex flex-col bg-secondary/40">
+      <div className="bg-brand-green text-white text-center py-10 px-6">
+        <h1 className="text-3xl sm:text-4xl font-extrabold">Relatório de Acesso ao WhatsApp</h1>
+        <p className="mt-2 text-sm text-white/90">
+          Confira abaixo os principais dados recuperados da análise do número informado.
+        </p>
+      </div>
+
+      <main className="flex-1 max-w-3xl w-full mx-auto px-4 py-8 space-y-6 pb-32">
+        {/* Análise de conversas */}
+        <section className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-brand-green-strong">💬 Análise de Conversas</h2>
+          <p className="mt-3 text-sm leading-relaxed">
+            <span className="text-brand-red font-semibold">148 conversas suspeitas</span> foram encontradas
+            durante a análise. O sistema conseguiu recuperar{" "}
+            <span className="text-brand-green-strong font-semibold">mensagens apagadas</span> e algumas foram
+            classificadas como <span className="text-brand-red font-semibold">críticas</span> com base no conteúdo.
+          </p>
+          <p className="mt-3 text-xs text-muted-foreground">Toque numa conversa abaixo para visualizar os detalhes.</p>
+          <div className="mt-4 space-y-2">
+            <ConversationCard id="392" label="+351 9XXXX-392" alert="Mensagem apagada recuperada" time="Ontem" />
+            <ConversationCard id="781" label="+351 9XXXX-781" alert="Áudio suspeito detetado" time="3 dias" />
+            <ConversationCard id="032" label="+351 9XXXX-032" alert="Fotos suspeitas encontradas" time="1 semana" />
+          </div>
+        </section>
+
+        {/* Mídia recuperada */}
+        <section className="bg-white rounded-2xl border border-border p-6 shadow-sm">
+          <h2 className="text-xl font-bold text-brand-green-strong">📷 Mídia Recuperada</h2>
+          <p className="mt-3 text-sm leading-relaxed">
+            <span className="text-brand-red font-semibold">3 áudios comprometedores</span> foram recuperados
+            durante a análise. Além disso, o sistema encontrou{" "}
+            <span className="text-brand-red font-semibold">267 fotos apagadas</span> que podem conter conteúdo sensível.
+          </p>
+          <button className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
+            🔓 DESBLOQUEAR ÁUDIOS COMPLETOS
+          </button>
+          <div className="mt-4 grid grid-cols-3 gap-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <div key={i} className="aspect-square rounded-xl bg-secondary flex items-center justify-center text-sm text-muted-foreground">
+                🔒 Bloqueado
+              </div>
+            ))}
+          </div>
+          <button className="mt-4 w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-3 rounded-xl">
+            🔓 DESBLOQUEAR TODAS AS FOTOS
+          </button>
+        </section>
+
+        <div ref={ctaRef} />
+      </main>
+
+      <div className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-white via-white to-white/0 pt-4 pb-4 px-4">
+        <button className="block max-w-3xl mx-auto w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-4 rounded-xl shadow-lg text-lg">
+          🔓 DESBLOQUEAR TUDO POR €9.90
+        </button>
+      </div>
+
+      <Footer />
     </div>
   );
 }
 
 function Index() {
-  return <PlaceholderIndex />;
+  const [step, setStep] = useState<Step>("intro");
+
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [step]);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+      <TopBanner red={step !== "report"} />
+      {step === "intro" && <IntroStep onChoose={() => setStep("phone")} />}
+      {step === "phone" && <PhoneStep onSubmit={() => setStep("processing")} onBack={() => setStep("intro")} />}
+      {step === "processing" && <ProcessingStep onDone={() => setStep("report")} />}
+      {step === "report" && <ReportStep />}
+    </div>
+  );
 }
