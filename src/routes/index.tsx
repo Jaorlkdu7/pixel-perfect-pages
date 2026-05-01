@@ -227,7 +227,6 @@ function ProcessingStep({ onDone }: { onDone: () => void }) {
               </div>
               <div className="flex-1">
                 <p className="font-bold">Perfil WhatsApp</p>
-                <p className="text-sm text-muted-foreground">johsiuajdbaiusdbad</p>
               </div>
               <span className="text-xs font-semibold px-3 py-1 rounded-full bg-brand-green/15 text-brand-green-strong">
                 Online
@@ -369,7 +368,7 @@ function ReportStep() {
 
       <div className="fixed inset-x-0 bottom-0 z-40 bg-gradient-to-t from-white via-white to-white/0 pt-4 pb-4 px-4">
         <button className="block max-w-3xl mx-auto w-full bg-brand-green hover:bg-brand-green-strong transition text-white font-bold py-4 rounded-xl shadow-lg text-lg">
-          🔓 DESBLOQUEAR TUDO POR €9.90
+          🔓 DESBLOQUEAR TUDO POR R$20,99
         </button>
       </div>
 
