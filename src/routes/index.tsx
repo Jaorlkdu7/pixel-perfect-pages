@@ -20,9 +20,8 @@ type Step = "intro" | "phone" | "processing" | "report";
 function TopBanner({ red = true }: { red?: boolean }) {
   return (
     <div
-      className={`w-full text-center py-3 text-sm font-bold tracking-wide text-white ${
-        red ? "bg-brand-red-soft" : "bg-brand-red"
-      }`}
+      className={`w-full text-center py-3 text-sm font-bold tracking-wide text-white ${red ? "bg-brand-red-soft" : "bg-brand-red"
+        }`}
     >
       APENAS HOJE 01/05/2026 TESTE GRÁTIS.
     </div>
@@ -141,9 +140,8 @@ function PhoneStep({ onSubmit, onBack }: { onSubmit: () => void; onBack: () => v
                 }}
                 placeholder="+351 912 345 678"
                 aria-invalid={!!error}
-                className={`w-full px-5 py-4 rounded-xl border-2 text-center text-lg outline-none transition ${
-                  error ? "border-destructive" : "border-brand-green focus:border-brand-green-strong"
-                }`}
+                className={`w-full px-5 py-4 rounded-xl border-2 text-center text-lg outline-none transition ${error ? "border-destructive" : "border-brand-green focus:border-brand-green-strong"
+                  }`}
               />
               {error && <p className="mt-2 text-sm text-destructive">{error}</p>}
             </div>
@@ -352,7 +350,7 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
       await navigator.clipboard.writeText(pixCode);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {}
+    } catch { }
   };
 
   return (
@@ -402,17 +400,15 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
               <div className="grid grid-cols-2 gap-2 bg-secondary p-1 rounded-xl">
                 <button
                   onClick={() => setTab("pix")}
-                  className={`py-2 rounded-lg font-semibold text-sm transition ${
-                    tab === "pix" ? "bg-white shadow text-foreground" : "text-muted-foreground"
-                  }`}
+                  className={`py-2 rounded-lg font-semibold text-sm transition ${tab === "pix" ? "bg-white shadow text-foreground" : "text-muted-foreground"
+                    }`}
                 >
                   Pix
                 </button>
                 <button
                   onClick={() => setTab("card")}
-                  className={`py-2 rounded-lg font-semibold text-sm transition ${
-                    tab === "card" ? "bg-white shadow text-foreground" : "text-muted-foreground"
-                  }`}
+                  className={`py-2 rounded-lg font-semibold text-sm transition ${tab === "card" ? "bg-white shadow text-foreground" : "text-muted-foreground"
+                    }`}
                 >
                   Cartão
                 </button>
@@ -431,7 +427,7 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                       className={`rounded-[1px] ${
                         // padrão pseudo-aleatório estável
                         (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
-                      }`}
+                        }`}
                     />
                   ))}
                 </div>
@@ -472,9 +468,8 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                     value={card.number}
                     onChange={(e) => setCard({ ...card, number: formatCard(e.target.value) })}
                     placeholder="0000 0000 0000 0000"
-                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${
-                      errors.number ? "border-destructive" : "border-border focus:border-brand-green"
-                    }`}
+                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.number ? "border-destructive" : "border-border focus:border-brand-green"
+                      }`}
                   />
                   {errors.number && <p className="text-xs text-destructive mt-1">{errors.number}</p>}
                 </div>
@@ -484,9 +479,8 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                     value={card.name}
                     onChange={(e) => setCard({ ...card, name: e.target.value.toUpperCase() })}
                     placeholder="NOME COMO NO CARTÃO"
-                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${
-                      errors.name ? "border-destructive" : "border-border focus:border-brand-green"
-                    }`}
+                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.name ? "border-destructive" : "border-border focus:border-brand-green"
+                      }`}
                   />
                   {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
                 </div>
@@ -498,9 +492,8 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                       value={card.exp}
                       onChange={(e) => setCard({ ...card, exp: formatExp(e.target.value) })}
                       placeholder="MM/AA"
-                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${
-                        errors.exp ? "border-destructive" : "border-border focus:border-brand-green"
-                      }`}
+                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.exp ? "border-destructive" : "border-border focus:border-brand-green"
+                        }`}
                     />
                     {errors.exp && <p className="text-xs text-destructive mt-1">{errors.exp}</p>}
                   </div>
@@ -513,9 +506,8 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                         setCard({ ...card, cvc: e.target.value.replace(/\D/g, "").slice(0, 4) })
                       }
                       placeholder="123"
-                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${
-                        errors.cvc ? "border-destructive" : "border-border focus:border-brand-green"
-                      }`}
+                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.cvc ? "border-destructive" : "border-border focus:border-brand-green"
+                        }`}
                     />
                     {errors.cvc && <p className="text-xs text-destructive mt-1">{errors.cvc}</p>}
                   </div>
