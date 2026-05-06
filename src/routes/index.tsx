@@ -326,12 +326,18 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
     if (!open || tab !== "pix" || pixCode || pixLoading) return;
     setPixLoading(true);
     setPixError("");
-    gerarPixAnubis()
-      .then((d) => {
-        setPixCode(d.copyAndPaste);
-        setPixQr(d.qrCodeBase64);
+    createAnubisPix()
+      .then((d: { copyAndPaste: string; qrCodeBase64: string }) => {
+        setPixCode(d.copyAndPaste || "");
+        setPixQr(d.qrCodeBase64 || "");
+        if (!d.copyAndPaste && !d.qrCodeBase64) {
+          setPixError("Resposta sem QR Code. Tente novamente.");
+        }
       })
-      .catch(() => setPixError("Erro ao gerar Pix. Tente novamente."))
+      .catch((e) => {
+        console.error(e);
+        setPixError("Erro ao gerar Pix. Tente novamente.");
+      })
       .finally(() => setPixLoading(false));
   }, [open, tab, pixCode, pixLoading]);
 
