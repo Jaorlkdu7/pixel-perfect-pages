@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { createAnubisPix } from "@/server/anubis.functions";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
