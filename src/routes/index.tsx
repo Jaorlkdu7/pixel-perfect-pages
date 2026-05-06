@@ -471,29 +471,46 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
             {tab === "pix" ? (
               <div className="p-5 space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  Escaneie o QR Code abaixo ou copie o código Pix.
+                  {pixLoading
+                    ? "A gerar Pix..."
+                    : pixError
+                    ? pixError
+                    : "Escaneie o QR Code abaixo ou copie o código Pix."}
                 </p>
-                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 grid grid-cols-12 gap-[2px]">
-                  {Array.from({ length: 144 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`rounded-[1px] ${
-                        // padrão pseudo-aleatório estável
-                        (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
-                      }`}
+                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 flex items-center justify-center overflow-hidden">
+                  {pixQr ? (
+                    <img
+                      src={`data:image/png;base64,${pixQr}`}
+                      alt="QR Code Pix"
+                      className="w-full h-full object-contain"
                     />
-                  ))}
+                  ) : (
+                    <div className="grid grid-cols-12 gap-[2px] w-full h-full opacity-40">
+                      {Array.from({ length: 144 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`rounded-[1px] ${
+                            (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="bg-secondary rounded-xl p-3">
                   <p className="text-[11px] text-muted-foreground mb-1">Pix Copia e Cola</p>
-                  <p className="text-xs break-all font-mono leading-relaxed">{pixCode}</p>
+                  <p className="text-xs break-all font-mono leading-relaxed min-h-[2rem]">
+                    {pixCode || (pixLoading ? "Gerando código..." : "—")}
+                  </p>
                 </div>
                 <button
                   onClick={copyPix}
-                  className="w-full bg-foreground hover:bg-foreground/90 transition text-white font-bold py-3 rounded-xl"
+                  disabled={!pixCode}
+                  className="w-full bg-foreground hover:bg-foreground/90 disabled:opacity-50 transition text-white font-bold py-3 rounded-xl"
                 >
                   {copied ? "✓ Código copiado" : "Copiar código Pix"}
                 </button>
+
                 <button
                   onClick={() => handlePay("pix")}
                   disabled={status === "processing"}
