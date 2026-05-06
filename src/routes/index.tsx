@@ -473,23 +473,12 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                     ? pixError
                     : "Escaneie o QR Code abaixo ou copie o código Pix."}
                 </p>
-<<<<<<< HEAD
-                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 grid grid-cols-12 gap-[2px]">
-                  {Array.from({ length: 144 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`rounded-[1px] ${
-                        // padrão pseudo-aleatório estável
-                        (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
-                        }`}
-=======
                 <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 flex items-center justify-center overflow-hidden">
                   {pixQr ? (
                     <img
-                      src={`data:image/png;base64,${pixQr}`}
+                      src={pixQr.startsWith("data:") ? pixQr : `data:image/png;base64,${pixQr}`}
                       alt="QR Code Pix"
                       className="w-full h-full object-contain"
->>>>>>> e0fb7f71c87c7cec68cce1c9c8fd627c803f4e41
                     />
                   ) : (
                     <div className="grid grid-cols-12 gap-[2px] w-full h-full opacity-40">
