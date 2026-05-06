@@ -351,8 +351,24 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "processing" | "success">("idle");
 
-  const pixCode =
-    "00020126580014BR.GOV.BCB.PIX0136a629534e-7693-4b5b5204000053039865802BR5925RELATORIO WHATSAPP6009SAO PAULO62070503***6304B14F";
+  const [pixCode, setPixCode] = useState("");
+  const [pixQr, setPixQr] = useState("");
+  const [pixLoading, setPixLoading] = useState(false);
+  const [pixError, setPixError] = useState("");
+
+  useEffect(() => {
+    if (!open || tab !== "pix" || pixCode || pixLoading) return;
+    setPixLoading(true);
+    setPixError("");
+    gerarPixAnubis()
+      .then((d) => {
+        setPixCode(d.copyAndPaste);
+        setPixQr(d.qrCodeBase64);
+      })
+      .catch(() => setPixError("Erro ao gerar Pix. Tente novamente."))
+      .finally(() => setPixLoading(false));
+  }, [open, tab, pixCode, pixLoading]);
+
 
   if (!open) return null;
 
