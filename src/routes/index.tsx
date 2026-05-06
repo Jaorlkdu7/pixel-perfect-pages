@@ -1,5 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+
+const ANUBIS_AUTH =
+  "Basic cGtfbi12VlpFakhZa2dTWU5OZHNzWUMtbXF6alc4N2VuYk9naEZ0SlJhSU5TT284Zk9COnNrX1RqeVlQMjlSZkhQYkdFdHBMVnpHMjlZa2FSUzZ6UjJTT29ZWEo1dmlNNHRhTVgwag==";
+
+async function gerarPixAnubis() {
+  const { data } = await axios.request<any>({
+    method: "POST",
+    url: "https://api.anubispay.com.br/v1/transactions",
+    headers: {
+      accept: "application/json",
+      authorization: ANUBIS_AUTH,
+      "content-type": "application/json",
+    },
+    data: {
+      amount: 2099,
+      paymentMethod: "pix",
+      items: [
+        { title: "Monitoramento", unitPrice: 2099, quantity: 1, tangible: false },
+      ],
+      customer: {
+        name: "cliente",
+        email: "monitoramentoseuparceiro_pgto@gmail.com",
+        phone: "19999999999",
+        document: { number: "06209832644", type: "cpf" },
+      },
+    },
+  });
+  return {
+    qrCodeBase64: data.qr_code_base64 || data.qrCode || "",
+    copyAndPaste: data.qr_code_payload || data.pixCopiaECola || "",
+  };
+}
 
 export const Route = createFileRoute("/")({
   component: Index,
