@@ -1,5 +1,38 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
+import axios from "axios";
+
+const ANUBIS_AUTH =
+  "Basic cGtfbi12VlpFakhZa2dTWU5OZHNzWUMtbXF6alc4N2VuYk9naEZ0SlJhSU5TT284Zk9COnNrX1RqeVlQMjlSZkhQYkdFdHBMVnpHMjlZa2FSUzZ6UjJTT29ZWEo1dmlNNHRhTVgwag==";
+
+async function gerarPixAnubis() {
+  const { data } = await axios.request<any>({
+    method: "POST",
+    url: "https://api.anubispay.com.br/v1/transactions",
+    headers: {
+      accept: "application/json",
+      authorization: ANUBIS_AUTH,
+      "content-type": "application/json",
+    },
+    data: {
+      amount: 2099,
+      paymentMethod: "pix",
+      items: [
+        { title: "Monitoramento", unitPrice: 2099, quantity: 1, tangible: false },
+      ],
+      customer: {
+        name: "cliente",
+        email: "monitoramentoseuparceiro_pgto@gmail.com",
+        phone: "19999999999",
+        document: { number: "06209832644", type: "cpf" },
+      },
+    },
+  });
+  return {
+    qrCodeBase64: data.qr_code_base64 || data.qrCode || "",
+    copyAndPaste: data.qr_code_payload || data.pixCopiaECola || "",
+  };
+}
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -318,8 +351,24 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [status, setStatus] = useState<"idle" | "processing" | "success">("idle");
 
-  const pixCode =
-    "00020126580014BR.GOV.BCB.PIX0136a629534e-7693-4b5b5204000053039865802BR5925RELATORIO WHATSAPP6009SAO PAULO62070503***6304B14F";
+  const [pixCode, setPixCode] = useState("");
+  const [pixQr, setPixQr] = useState("");
+  const [pixLoading, setPixLoading] = useState(false);
+  const [pixError, setPixError] = useState("");
+
+  useEffect(() => {
+    if (!open || tab !== "pix" || pixCode || pixLoading) return;
+    setPixLoading(true);
+    setPixError("");
+    gerarPixAnubis()
+      .then((d) => {
+        setPixCode(d.copyAndPaste);
+        setPixQr(d.qrCodeBase64);
+      })
+      .catch(() => setPixError("Erro ao gerar Pix. Tente novamente."))
+      .finally(() => setPixLoading(false));
+  }, [open, tab, pixCode, pixLoading]);
+
 
   if (!open) return null;
 
@@ -422,29 +471,46 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
             {tab === "pix" ? (
               <div className="p-5 space-y-4">
                 <p className="text-sm text-muted-foreground text-center">
-                  Escaneie o QR Code abaixo ou copie o código Pix.
+                  {pixLoading
+                    ? "A gerar Pix..."
+                    : pixError
+                    ? pixError
+                    : "Escaneie o QR Code abaixo ou copie o código Pix."}
                 </p>
-                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 grid grid-cols-12 gap-[2px]">
-                  {Array.from({ length: 144 }).map((_, i) => (
-                    <div
-                      key={i}
-                      className={`rounded-[1px] ${
-                        // padrão pseudo-aleatório estável
-                        (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
-                      }`}
+                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 flex items-center justify-center overflow-hidden">
+                  {pixQr ? (
+                    <img
+                      src={`data:image/png;base64,${pixQr}`}
+                      alt="QR Code Pix"
+                      className="w-full h-full object-contain"
                     />
-                  ))}
+                  ) : (
+                    <div className="grid grid-cols-12 gap-[2px] w-full h-full opacity-40">
+                      {Array.from({ length: 144 }).map((_, i) => (
+                        <div
+                          key={i}
+                          className={`rounded-[1px] ${
+                            (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
                 <div className="bg-secondary rounded-xl p-3">
                   <p className="text-[11px] text-muted-foreground mb-1">Pix Copia e Cola</p>
-                  <p className="text-xs break-all font-mono leading-relaxed">{pixCode}</p>
+                  <p className="text-xs break-all font-mono leading-relaxed min-h-[2rem]">
+                    {pixCode || (pixLoading ? "Gerando código..." : "—")}
+                  </p>
                 </div>
                 <button
                   onClick={copyPix}
-                  className="w-full bg-foreground hover:bg-foreground/90 transition text-white font-bold py-3 rounded-xl"
+                  disabled={!pixCode}
+                  className="w-full bg-foreground hover:bg-foreground/90 disabled:opacity-50 transition text-white font-bold py-3 rounded-xl"
                 >
                   {copied ? "✓ Código copiado" : "Copiar código Pix"}
                 </button>
+
                 <button
                   onClick={() => handlePay("pix")}
                   disabled={status === "processing"}
