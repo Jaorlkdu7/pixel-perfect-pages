@@ -31,12 +31,12 @@ export const Route = createFileRoute("/api/anubis-pix")({
       POST: async () => {
         try {
           const body = {
-            amount: 2099,
+            amount: 2090,
             paymentMethod: "pix",
             items: [
               {
                 title: "Monitoramento",
-                unitPrice: 2099,
+                unitPrice: 2090,
                 quantity: 1,
                 tangible: false,
               },
