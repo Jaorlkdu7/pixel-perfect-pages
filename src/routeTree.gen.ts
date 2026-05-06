@@ -10,33 +10,43 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiAnubisPixRouteImport } from './routes/api/anubis-pix'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAnubisPixRoute = ApiAnubisPixRouteImport.update({
+  id: '/api/anubis-pix',
+  path: '/api/anubis-pix',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/anubis-pix': typeof ApiAnubisPixRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/anubis-pix': typeof ApiAnubisPixRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/anubis-pix': typeof ApiAnubisPixRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths: '/' | '/api/anubis-pix'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to: '/' | '/api/anubis-pix'
+  id: '__root__' | '/' | '/api/anubis-pix'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiAnubisPixRoute: typeof ApiAnubisPixRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +58,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/anubis-pix': {
+      id: '/api/anubis-pix'
+      path: '/api/anubis-pix'
+      fullPath: '/api/anubis-pix'
+      preLoaderRoute: typeof ApiAnubisPixRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiAnubisPixRoute: ApiAnubisPixRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
