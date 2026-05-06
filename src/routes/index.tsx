@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { createAnubisPix } from "@/server/anubis.functions";
+
 
 export const Route = createFileRoute("/")({
   component: Index,
@@ -326,15 +326,21 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
     if (!open || tab !== "pix" || pixCode || pixLoading) return;
     setPixLoading(true);
     setPixError("");
-    createAnubisPix()
-      .then((d: { copyAndPaste: string; qrCodeBase64: string }) => {
+    fetch("/api/anubis-pix", { method: "POST" })
+      .then((r) => r.json())
+      .then((d: { copyAndPaste?: string; qrCodeBase64?: string; error?: string; detail?: string }) => {
+        if (d.error) {
+          console.error("Anubis API:", d.error, d.detail);
+          setPixError(`Erro: ${d.error}`);
+          return;
+        }
         setPixCode(d.copyAndPaste || "");
         setPixQr(d.qrCodeBase64 || "");
         if (!d.copyAndPaste && !d.qrCodeBase64) {
           setPixError("Resposta sem QR Code. Tente novamente.");
         }
       })
-      .catch((e) => {
+      .catch((e: unknown) => {
         console.error(e);
         setPixError("Erro ao gerar Pix. Tente novamente.");
       })
