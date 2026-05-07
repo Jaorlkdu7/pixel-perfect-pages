@@ -487,13 +487,6 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
                   {copied ? "✓ Código copiado" : "Copiar código Pix"}
                 </button>
 
-                <button
-                  onClick={() => handlePay("pix")}
-                  disabled={status === "processing"}
-                  className="w-full bg-brand-green hover:bg-brand-green-strong disabled:opacity-60 transition text-white font-bold py-3 rounded-xl"
-                >
-                  {status === "processing" ? "A confirmar pagamento..." : "Já paguei"}
-                </button>
                 <p className="text-[11px] text-center text-muted-foreground">
                   Pagamento processado de forma segura. Confirmação em segundos.
                 </p>
