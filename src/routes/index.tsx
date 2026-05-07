@@ -424,146 +424,51 @@ function CheckoutModal({ open, onClose }: { open: boolean; onClose: () => void }
             </button>
           </div>
         ) : (
-          <>
-            <div className="px-5 pt-4">
-              <div className="grid grid-cols-2 gap-2 bg-secondary p-1 rounded-xl">
-                <button
-                  onClick={() => setTab("pix")}
-                  className={`py-2 rounded-lg font-semibold text-sm transition ${tab === "pix" ? "bg-white shadow text-foreground" : "text-muted-foreground"
-                    }`}
-                >
-                  Pix
-                </button>
-                <button
-                  onClick={() => setTab("card")}
-                  className={`py-2 rounded-lg font-semibold text-sm transition ${tab === "card" ? "bg-white shadow text-foreground" : "text-muted-foreground"
-                    }`}
-                >
-                  Cartão
-                </button>
-              </div>
+          <div className="p-5 space-y-4">
+            <p className="text-sm text-muted-foreground text-center">
+              {pixLoading
+                ? "A gerar Pix..."
+                : pixError
+                ? pixError
+                : "Escaneie o QR Code abaixo ou copie o código Pix."}
+            </p>
+            <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 flex items-center justify-center overflow-hidden">
+              {pixQr ? (
+                <img
+                  src={pixQr.startsWith("data:") ? pixQr : `data:image/png;base64,${pixQr}`}
+                  alt="QR Code Pix"
+                  className="w-full h-full object-contain"
+                />
+              ) : (
+                <div className="grid grid-cols-12 gap-[2px] w-full h-full opacity-40">
+                  {Array.from({ length: 144 }).map((_, i) => (
+                    <div
+                      key={i}
+                      className={`rounded-[1px] ${
+                        (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
+                      }`}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
-
-            {tab === "pix" ? (
-              <div className="p-5 space-y-4">
-                <p className="text-sm text-muted-foreground text-center">
-                  {pixLoading
-                    ? "A gerar Pix..."
-                    : pixError
-                    ? pixError
-                    : "Escaneie o QR Code abaixo ou copie o código Pix."}
-                </p>
-                <div className="mx-auto w-48 h-48 bg-white border-2 border-foreground rounded-xl p-2 flex items-center justify-center overflow-hidden">
-                  {pixQr ? (
-                    <img
-                      src={pixQr.startsWith("data:") ? pixQr : `data:image/png;base64,${pixQr}`}
-                      alt="QR Code Pix"
-                      className="w-full h-full object-contain"
-                    />
-                  ) : (
-                    <div className="grid grid-cols-12 gap-[2px] w-full h-full opacity-40">
-                      {Array.from({ length: 144 }).map((_, i) => (
-                        <div
-                          key={i}
-                          className={`rounded-[1px] ${
-                            (i * 7 + (i % 5) * 11) % 3 === 0 ? "bg-foreground" : "bg-transparent"
-                          }`}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-                <div className="bg-secondary rounded-xl p-3">
-                  <p className="text-[11px] text-muted-foreground mb-1">Pix Copia e Cola</p>
-                  <p className="text-xs break-all font-mono leading-relaxed min-h-[2rem]">
-                    {pixCode || (pixLoading ? "Gerando código..." : "—")}
-                  </p>
-                </div>
-                <button
-                  onClick={copyPix}
-                  disabled={!pixCode}
-                  className="w-full bg-foreground hover:bg-foreground/90 disabled:opacity-50 transition text-white font-bold py-3 rounded-xl"
-                >
-                  {copied ? "✓ Código copiado" : "Copiar código Pix"}
-                </button>
-
-                <p className="text-[11px] text-center text-muted-foreground">
-                  Pagamento processado de forma segura. Confirmação em segundos.
-                </p>
-              </div>
-            ) : (
-              <form
-                className="p-5 space-y-3"
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handlePay("card");
-                }}
-                noValidate
-              >
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Número do cartão</label>
-                  <input
-                    inputMode="numeric"
-                    value={card.number}
-                    onChange={(e) => setCard({ ...card, number: formatCard(e.target.value) })}
-                    placeholder="0000 0000 0000 0000"
-                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.number ? "border-destructive" : "border-border focus:border-brand-green"
-                      }`}
-                  />
-                  {errors.number && <p className="text-xs text-destructive mt-1">{errors.number}</p>}
-                </div>
-                <div>
-                  <label className="text-xs font-semibold text-muted-foreground">Nome do titular</label>
-                  <input
-                    value={card.name}
-                    onChange={(e) => setCard({ ...card, name: e.target.value.toUpperCase() })}
-                    placeholder="NOME COMO NO CARTÃO"
-                    className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.name ? "border-destructive" : "border-border focus:border-brand-green"
-                      }`}
-                  />
-                  {errors.name && <p className="text-xs text-destructive mt-1">{errors.name}</p>}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground">Validade</label>
-                    <input
-                      inputMode="numeric"
-                      value={card.exp}
-                      onChange={(e) => setCard({ ...card, exp: formatExp(e.target.value) })}
-                      placeholder="MM/AA"
-                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.exp ? "border-destructive" : "border-border focus:border-brand-green"
-                        }`}
-                    />
-                    {errors.exp && <p className="text-xs text-destructive mt-1">{errors.exp}</p>}
-                  </div>
-                  <div>
-                    <label className="text-xs font-semibold text-muted-foreground">CVC</label>
-                    <input
-                      inputMode="numeric"
-                      value={card.cvc}
-                      onChange={(e) =>
-                        setCard({ ...card, cvc: e.target.value.replace(/\D/g, "").slice(0, 4) })
-                      }
-                      placeholder="123"
-                      className={`w-full mt-1 px-4 py-3 rounded-xl border-2 outline-none transition ${errors.cvc ? "border-destructive" : "border-border focus:border-brand-green"
-                        }`}
-                    />
-                    {errors.cvc && <p className="text-xs text-destructive mt-1">{errors.cvc}</p>}
-                  </div>
-                </div>
-                <button
-                  type="submit"
-                  disabled={status === "processing"}
-                  className="w-full bg-brand-green hover:bg-brand-green-strong disabled:opacity-60 transition text-white font-bold py-3 rounded-xl mt-2"
-                >
-                  {status === "processing" ? "A processar pagamento..." : "Pagar R$ 20,99"}
-                </button>
-                <p className="text-[11px] text-center text-muted-foreground">
-                  🔒 Conexão segura e criptografada.
-                </p>
-              </form>
-            )}
-          </>
+            <div className="bg-secondary rounded-xl p-3">
+              <p className="text-[11px] text-muted-foreground mb-1">Pix Copia e Cola</p>
+              <p className="text-xs break-all font-mono leading-relaxed min-h-[2rem]">
+                {pixCode || (pixLoading ? "Gerando código..." : "—")}
+              </p>
+            </div>
+            <button
+              onClick={copyPix}
+              disabled={!pixCode}
+              className="w-full bg-foreground hover:bg-foreground/90 disabled:opacity-50 transition text-white font-bold py-3 rounded-xl"
+            >
+              {copied ? "✓ Código copiado" : "Copiar código Pix"}
+            </button>
+            <p className="text-[11px] text-center text-muted-foreground">
+              Pagamento processado de forma segura. Confirmação em segundos.
+            </p>
+          </div>
         )}
       </div>
     </div>
