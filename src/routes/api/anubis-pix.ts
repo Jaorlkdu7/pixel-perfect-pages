@@ -24,6 +24,7 @@ function pickDeep(obj: any, keys: string[]): string {
 }
 
 export const Route = createFileRoute("/api/anubis-pix")({
+  // @ts-expect-error - server handlers via TanStack Start augmentation
   server: {
     handlers: {
       OPTIONS: async () =>
